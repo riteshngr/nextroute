@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Map, Mail, Compass, User } from 'lucide-react'; 
+import { Map, Mail, Compass, User, LogOut, Shield } from 'lucide-react'; 
 import { Link, useLocation, useNavigate } from 'react-router-dom'; 
+import { useAuth } from '../context/AuthContext';
 import AuthPopup from './AuthPopup';
 import './Navbar.css';
+
+
 
 const navItems = [
   { name: 'Home', path: '/', icon: Map },
@@ -16,6 +19,7 @@ const navItems = [
 const Navbar = () => {
 
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const { user, isLoggedIn, isAdmin, handleLogout } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,14 +71,38 @@ const Navbar = () => {
               </a>
             ))}
 
-         
-            <button 
-              className="login-btn" 
-              onClick={() => setIsAuthOpen(true)}
-            >
-              <User className="w-4 h-4" />
-              Login / Signup
-            </button>
+            {/* Admin Panel link — only visible to admin */}
+            {isAdmin && (
+              <Link to="/admin" className="nav-item" style={{ color: '#FF8833' }}>
+                <Shield className="w-4 h-4" style={{ display: 'inline', marginRight: '4px' }} />
+                Admin
+              </Link>
+            )}
+
+            {/* Auth section */}
+            {isLoggedIn ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ color: '#fff', fontSize: '0.9rem', opacity: 0.9 }}>
+                  Hi, {user.name.split(' ')[0]}
+                </span>
+                <button 
+                  className="login-btn" 
+                  onClick={handleLogout}
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button 
+                className="login-btn" 
+                onClick={() => setIsAuthOpen(true)}
+              >
+                <User className="w-4 h-4" />
+                Login / Signup
+              </button>
+            )}
           </nav>
         </div>
       </header>

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { apiPost, setToken } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import "./login.css";
+
 
 export default function AuthPopup({ isOpen, onClose }) {
   const [mode, setMode] = useState("login");
-
+  const { refreshUser } = useAuth();
 
   const [form, setForm] = useState({
     name: "",
@@ -12,12 +15,15 @@ export default function AuthPopup({ isOpen, onClose }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
+    setServerError("");
   };
 
   const validate = () => {
@@ -46,18 +52,44 @@ export default function AuthPopup({ isOpen, onClose }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
+    setLoading(true);
+    setServerError("");
 
-    alert(mode === "login" ? "Login Successful!" : "Signup Successful!");
+    try {
+      if (mode === "login") {
+        const data = await apiPost("/auth/login", {
+          email: form.email,
+          password: form.password,
+        });
+        setToken(data.token);
+        refreshUser();
+        onClose();
+      } else {
+        const data = await apiPost("/auth/signup", {
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        });
+        setToken(data.token);
+        refreshUser();
+        onClose();
+      }
+    } catch (err) {
+      setServerError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const switchMode = (newMode) => {
     setMode(newMode);
     setErrors({});
+    setServerError("");
   };
 
   return (
@@ -68,7 +100,20 @@ export default function AuthPopup({ isOpen, onClose }) {
 
         <form onSubmit={handleSubmit}>
           
-          
+          {serverError && (
+            <div style={{ 
+              background: 'rgba(255,77,77,0.15)', 
+              color: '#ff4d4d', 
+              padding: '10px 15px', 
+              borderRadius: '8px', 
+              marginBottom: '15px',
+              fontSize: '0.9rem',
+              textAlign: 'center'
+            }}>
+              {serverError}
+            </div>
+          )}
+
           {mode === "login" && (
             <div className="auth-content">
               <h2 className="auth-title">Welcome Back</h2>
@@ -100,10 +145,12 @@ export default function AuthPopup({ isOpen, onClose }) {
                 )}
               </div>
 
-              <button className="auth-btn">Login</button>
+              <button className="auth-btn" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
+              </button>
 
               <p className="auth-footer">
-                Don’t have an account?
+                Don't have an account?
                 <span className="auth-link" onClick={() => switchMode("signup")}>
                   Create one
                 </span>
@@ -111,7 +158,6 @@ export default function AuthPopup({ isOpen, onClose }) {
             </div>
           )}
 
-          
           {mode === "signup" && (
             <div className="auth-content">
               <h2 className="auth-title">Create Account</h2>
@@ -155,7 +201,9 @@ export default function AuthPopup({ isOpen, onClose }) {
                 )}
               </div>
 
-              <button className="auth-btn">Sign Up</button>
+              <button className="auth-btn" disabled={loading}>
+                {loading ? "Creating account..." : "Sign Up"}
+              </button>
 
               <p className="auth-footer">
                 Already have an account?

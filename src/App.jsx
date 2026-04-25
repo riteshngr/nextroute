@@ -2,10 +2,11 @@ import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './layout/Layout'
 
-// Pages
-import Home from './pages/Home'
-import About from './pages/About'
-import Contact from './pages/Contact'
+
+import Home from './pages/home'
+import About from './pages/about'
+import Contact from './pages/contact'
+import Admin from './pages/Admin'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="admin" element={<Admin />} />
   
           
           

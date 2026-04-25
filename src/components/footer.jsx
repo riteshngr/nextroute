@@ -1,7 +1,7 @@
 import React from 'react';
 import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import './Navbar.css'; // Same CSS file use kar lenge simplicity ke liye
+import './Navbar.css';
 
 const footerSections = [
   {
@@ -18,30 +18,34 @@ const footerSections = [
   },
 ];
 
-const Footer = () => {
-  const SocialIcon = ({ Icon }) => (
+const SocialIcon = (props) => {
+  const IconComponent = props.icon;
+  return (
     <button className="social-btn">
-      <Icon className="h-5 w-5" />
+      <IconComponent className="h-5 w-5" />
     </button>
   );
+};
+
+const Footer = () => {
 
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-grid">
-          {/* Logo + Social */}
+          {/* branding and social links */}
           <div className="footer-logo-section">
             <h2 className="footer-logo">NEXT ROUTE</h2>
             <p>Book, explore, and enjoy—all in one place.</p>
             <div className="footer-socials">
-              <SocialIcon Icon={Twitter} />
-              <SocialIcon Icon={Facebook} />
-              <SocialIcon Icon={Instagram} />
-              <SocialIcon Icon={Linkedin} />
+              <SocialIcon icon={Twitter} />
+              <SocialIcon icon={Facebook} />
+              <SocialIcon icon={Instagram} />
+              <SocialIcon icon={Linkedin} />
             </div>
           </div>
 
-          {/* Footer columns */}
+          {/* navigation links */}
           {footerSections.map((section) => (
             <div key={section.title}>
               <h3>{section.title}</h3>

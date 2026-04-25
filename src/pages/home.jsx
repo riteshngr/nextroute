@@ -7,6 +7,7 @@ import SearchSection from '../components/SearchSection';
 import PackageModal from '../components/PackageModal';
 import BookingModal from '../components/BookingModal';
 import SuccessPopup from '../components/SuccessPopup';
+import { apiGet, apiPost, isLoggedIn } from '../services/api';
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false);
@@ -16,49 +17,76 @@ const Home = () => {
   const [offerModal, setOfferModal] = useState(null);
   const [successData, setSuccessData] = useState(null);
 
-  // Must Visit package flow
   const [mustVisitModal, setMustVisitModal] = useState(null);
-  const [mustVisitPackage, setMustVisitPackage] = useState(null);
+
+  React.useEffect(() => {
+    if (isLoggedIn()) {
+      apiGet('/bookings')
+        .then(data => {
+          if (Array.isArray(data)) {
+            const formatted = data.map(b => ({
+              destination: b.destination,
+              date: b.toDate ? `${b.fromDate} to ${b.toDate}` : b.fromDate,
+              people: b.persons,
+              packageName: b.packageName,
+              price: `₹${b.totalPrice.toLocaleString()}`,
+            }));
+            setBookings(formatted);
+          }
+        })
+        .catch(err => console.error("Failed to load bookings", err));
+    }
+  }, []);
 
   const handleSearch = (data) => {
     setSearchData(data);
     setShowModal(true);
   };
 
-  const handleCardClick = (destinationName) => {
-    setSearchData({ destination: destinationName, fromDate: '', toDate: '', people: 1 });
-    setShowModal(true);
-  };
-
-  const handlePackageSelect = (pkg) => {
+  const handlePackageSelect = async (pkg) => {
+    const fromDateStr = searchData.fromDate || new Date().toISOString().split('T')[0];
     const dateRange = (searchData.fromDate && searchData.toDate)
       ? `${searchData.fromDate} to ${searchData.toDate}`
-      : new Date().toLocaleDateString();
+      : fromDateStr;
+
+    const priceNum = typeof pkg.priceNum === 'number' 
+        ? pkg.priceNum 
+        : parseInt(pkg.price.replace(/[^0-9]/g, '') || '0');
 
     const newBooking = {
-      name: 'Guest',
       destination: searchData.destination,
-      date: dateRange,
-      people: searchData.people,
-      packageName: pkg.name,
-      price: pkg.price,
-    };
-
-    setBookings([...bookings, newBooking]);
-    setShowModal(false);
-    setSuccessData({
-      destination: searchData.destination,
-      fromDate: searchData.fromDate || new Date().toLocaleDateString(),
-      toDate: searchData.toDate || '',
+      fromDate: fromDateStr,
+      toDate: searchData.toDate || null,
       persons: searchData.people,
       packageName: pkg.name,
-      price: pkg.price,
-    });
+      totalPrice: priceNum,
+    };
+
+    try {
+      await apiPost('/bookings', newBooking);
+      setBookings([...bookings, {
+        name: 'Guest',
+        destination: searchData.destination,
+        date: dateRange,
+        people: searchData.people,
+        packageName: pkg.name,
+        price: pkg.price,
+      }]);
+      setShowModal(false);
+      setSuccessData({
+        destination: searchData.destination,
+        fromDate: fromDateStr,
+        toDate: searchData.toDate || '',
+        persons: searchData.people,
+        packageName: pkg.name,
+        price: pkg.price,
+      });
+    } catch (err) {
+      alert(err.message || "Please login to book!");
+    }
   };
 
-  // Must Visit: package selected -> open booking modal for person/date
   const handleMustVisitPackageSelect = (pkg) => {
-    setMustVisitPackage(pkg);
     setShowModal(false);
     setOfferModal({
       name: mustVisitModal.name,
@@ -71,29 +99,47 @@ const Home = () => {
     setMustVisitModal(null);
   };
 
-  const handleOfferBook = (bookingInfo) => {
-    const totalPriceStr = `₹${bookingInfo.totalPrice.toLocaleString()}`;
+  const handleOfferBook = async (bookingInfo) => {
+    const fromDateStr = bookingInfo.fromDate || new Date().toISOString().split('T')[0];
     const dateStr = bookingInfo.toDate 
-      ? `${bookingInfo.fromDate} to ${bookingInfo.toDate}` 
-      : bookingInfo.fromDate;
+      ? `${fromDateStr} to ${bookingInfo.toDate}` 
+      : fromDateStr;
+      
+    const totalPriceStr = `₹${bookingInfo.totalPrice.toLocaleString()}`;
+    const destinationName = offerModal.place || offerModal.name;
+    const pkgName = offerModal.details || offerModal.packageName || 'Special Offer';
+
     const newBooking = {
-      name: 'Guest',
-      destination: offerModal.place || offerModal.name,
-      date: dateStr,
-      people: bookingInfo.persons,
-      packageName: offerModal.details || offerModal.packageName || 'Special Offer',
-      price: totalPriceStr,
-    };
-    setBookings([...bookings, newBooking]);
-    setOfferModal(null);
-    setSuccessData({
-      destination: offerModal.place || offerModal.name,
-      fromDate: bookingInfo.fromDate,
-      toDate: bookingInfo.toDate || '',
+      destination: destinationName,
+      fromDate: fromDateStr,
+      toDate: bookingInfo.toDate || null,
       persons: bookingInfo.persons,
-      packageName: offerModal.details || offerModal.packageName || 'Special Offer',
-      price: totalPriceStr,
-    });
+      packageName: pkgName,
+      totalPrice: bookingInfo.totalPrice,
+    };
+
+    try {
+      await apiPost('/bookings', newBooking);
+      setBookings([...bookings, {
+        name: 'Guest',
+        destination: destinationName,
+        date: dateStr,
+        people: bookingInfo.persons,
+        packageName: pkgName,
+        price: totalPriceStr,
+      }]);
+      setOfferModal(null);
+      setSuccessData({
+        destination: destinationName,
+        fromDate: fromDateStr,
+        toDate: bookingInfo.toDate || '',
+        persons: bookingInfo.persons,
+        packageName: pkgName,
+        price: totalPriceStr,
+      });
+    } catch (err) {
+      alert(err.message || "Please login to book!");
+    }
   };
 
   return (
