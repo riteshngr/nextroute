@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,8 +49,11 @@ public class UploadController {
                 Path targetLocation = Paths.get(uploadDir).resolve(newFilename);
                 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-                // calculate the final asset url based on server origin
-                String fileUrl = "http://localhost:8080/nextroute/uploads/" + newFilename;
+                // calculate the final asset url dynamically based on request origin
+                String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/uploads/")
+                        .path(newFilename)
+                        .toUriString();
                 fileUrls.add(fileUrl);
             }
 
