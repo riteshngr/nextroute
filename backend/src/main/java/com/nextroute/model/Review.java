@@ -3,11 +3,6 @@ package com.nextroute.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Review entity — stores user-submitted travel reviews.
- * Each review belongs to a user (FK).
- * Rating is 1-5 stars.
- */
 @Entity
 @Table(name = "reviews")
 public class Review {

@@ -3,11 +3,7 @@ package com.nextroute.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * ChatMessage entity — stores chat messages between users and support.
- * roomId groups messages into conversations (typically "user_{userId}").
- * senderRole distinguishes user messages from admin/support replies.
- */
+// Messages are grouped by roomId (formatted as "user_{userId}") so each user gets their own chat thread.
 @Entity
 @Table(name = "chat_messages")
 public class ChatMessage {

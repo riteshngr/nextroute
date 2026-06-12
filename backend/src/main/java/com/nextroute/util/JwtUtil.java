@@ -31,9 +31,6 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    /**
-     * Generate a JWT token for the given user.
-     */
     public String generateToken(Long userId, String email, String name, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
@@ -50,10 +47,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    /**
-     * Validate and parse a JWT token. Returns the claims if valid.
-     * Throws an exception if the token is invalid or expired.
-     */
+    // Throws if the token is expired or tampered with
     public Claims validateToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -62,25 +56,16 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    /**
-     * Extract the user ID from a token.
-     */
     public Long getUserId(String token) {
         Claims claims = validateToken(token);
         return claims.get("userId", Long.class);
     }
 
-    /**
-     * Extract the user role from a token.
-     */
     public String getRole(String token) {
         Claims claims = validateToken(token);
         return claims.get("role", String.class);
     }
 
-    /**
-     * Check if a token is valid (not expired, properly signed).
-     */
     public boolean isValid(String token) {
         try {
             validateToken(token);

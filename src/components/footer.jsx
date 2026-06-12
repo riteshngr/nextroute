@@ -33,7 +33,7 @@ const Footer = () => {
     <footer className="footer">
       <div className="container">
         <div className="footer-grid">
-          {/* branding and social links */}
+
           <div className="footer-logo-section">
             <h2 className="footer-logo">NEXT ROUTE</h2>
             <p>Book, explore, and enjoy—all in one place.</p>
@@ -45,7 +45,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* navigation links */}
+
           {footerSections.map((section) => (
             <div key={section.title}>
               <h3>{section.title}</h3>

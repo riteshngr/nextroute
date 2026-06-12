@@ -2,12 +2,9 @@ package com.nextroute.model;
 
 import jakarta.persistence.*;
 
-/**
- * TravelPackage entity — stores travel packages for each destination.
- * destination_name is used to match user searches (e.g., "Goa", "Manali").
- * "_default" packages are shown as fallback when no match is found.
- * features stored as JSON string (array of feature strings).
- */
+// Packages are matched to searches by destinationName (case-insensitive).
+// Use "_default" as destinationName for fallback packages when no specific match exists.
+// Features are stored as a JSON array string.
 @Entity
 @Table(name = "packages")
 public class TravelPackage {

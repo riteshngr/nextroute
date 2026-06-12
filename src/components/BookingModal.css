@@ -223,7 +223,6 @@
   box-shadow: 0 8px 24px rgba(255, 136, 51, 0.5);
 }
 
-/* Success Popup */
 .sp-overlay {
   position: fixed;
   inset: 0;

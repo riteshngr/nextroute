@@ -48,7 +48,6 @@ public class UploadController {
                 Path targetLocation = Paths.get(uploadDir).resolve(newFilename);
                 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-                // calculate the final asset url based on server origin
                 String fileUrl = "http://localhost:8080/nextroute/uploads/" + newFilename;
                 fileUrls.add(fileUrl);
             }

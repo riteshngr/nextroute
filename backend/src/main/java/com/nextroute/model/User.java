@@ -3,11 +3,7 @@ package com.nextroute.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * User entity — stores registered users.
- * Role can be USER or ADMIN.
- * Admin account is auto-created on startup from application.properties.
- */
+// The admin account gets auto-created on startup from credentials in application.properties.
 @Entity
 @Table(name = "users")
 public class User {

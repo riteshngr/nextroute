@@ -71,7 +71,7 @@ const Navbar = () => {
               </a>
             ))}
 
-            {/* Admin Panel link — only visible to admin */}
+
             {isAdmin && (
               <Link to="/admin" className="nav-item" style={{ color: '#FF8833' }}>
                 <Shield className="w-4 h-4" style={{ display: 'inline', marginRight: '4px' }} />
@@ -79,7 +79,7 @@ const Navbar = () => {
               </Link>
             )}
 
-            {/* Auth section */}
+
             {isLoggedIn ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ color: '#fff', fontSize: '0.9rem', opacity: 0.9 }}>

@@ -3,12 +3,9 @@ package com.nextroute.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Destination entity — stores both Must Visit places and Special Offers.
- * Differentiated by the 'type' field (MUST_VISIT or SPECIAL_OFFER).
- * Special offers have additional fields: nights, oldPrice, newPrice, offerDetails.
- * imageUrls stored as JSON string (array of URLs).
- */
+// Serves double duty: the `type` field splits these into Must Visit places and Special Offers.
+// Special offers use the extra fields (nights, oldPrice, newPrice, offerDetails).
+// imageUrls is stored as a JSON array string.
 @Entity
 @Table(name = "destinations")
 public class Destination {

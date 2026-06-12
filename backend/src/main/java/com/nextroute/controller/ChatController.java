@@ -36,10 +36,7 @@ public class ChatController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    /**
-     * WebSocket handler — user sends a chat message.
-     * Routed here when client sends to /app/chat.send
-     */
+    // Handles incoming chat messages from users via WebSocket (/app/chat.send)
     @MessageMapping("/chat.send")
     public void handleUserMessage(ChatRequest request) {
         try {
@@ -67,21 +64,18 @@ public class ChatController {
         }
     }
 
-    /**
-     * WebSocket handler — admin replies to a user's chat.
-     * Routed here when admin sends to /app/chat.reply
-     */
+    // Handles admin replies to user chats via WebSocket (/app/chat.reply)
     @MessageMapping("/chat.reply")
     public void handleAdminReply(ChatRequest request) {
         try {
             var claims = jwtUtil.validateToken(request.getToken());
             String role = claims.get("role", String.class);
 
-            if (!"ADMIN".equals(role)) return; // Only admin can reply
+            if (!"ADMIN".equals(role)) return;
 
             Long adminId = claims.get("userId", Long.class);
             String adminName = claims.get("name", String.class);
-            String roomId = request.getRoomId(); // e.g., "user_5"
+            String roomId = request.getRoomId();
 
             ChatMessage msg = new ChatMessage(adminId, adminName, SenderRole.ADMIN, roomId, request.getMessage());
             chatMessageRepository.save(msg);
@@ -99,9 +93,7 @@ public class ChatController {
         }
     }
 
-    /**
-     * REST — get chat history for a room.
-     */
+
     @GetMapping("/history")
     public ResponseEntity<?> getChatHistory(
             @RequestParam String roomId,
@@ -134,9 +126,7 @@ public class ChatController {
         }
     }
 
-    /**
-     * REST — admin gets list of all active chat rooms.
-     */
+
     @GetMapping("/rooms")
     public ResponseEntity<?> getChatRooms(
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
@@ -160,7 +150,7 @@ public class ChatController {
                     .map(m -> {
                         ChatResponse cr = new ChatResponse(m.getId(), m.getSenderId(), m.getSenderName(),
                                 m.getSenderRole().name(), m.getRoomId(), m.getMessage(), m.getSentAt().toString());
-                        // Extract userId from roomId (format: "user_{id}") and look up name
+                        // Look up the user's display name from the roomId
                         try {
                             Long roomUserId = Long.parseLong(m.getRoomId().replace("user_", ""));
                             userRepository.findById(roomUserId)

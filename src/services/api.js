@@ -1,12 +1,9 @@
 
 
-// In development, Vite proxy or direct call to backend
-// In production (behind Nginx), the /api prefix is proxied to Tomcat
+// Falls back to '/api' for production (Nginx proxies it to the backend)
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
-/**
- * GET request to the backend API.
- */
+
 export async function apiGet(path) {
   const headers = {};
   const token = getToken();
@@ -24,9 +21,7 @@ export async function apiGet(path) {
   return response.json();
 }
 
-/**
- * POST request to the backend API.
- */
+
 export async function apiPost(path, body) {
   const headers = {
     'Content-Type': 'application/json',
@@ -50,9 +45,7 @@ export async function apiPost(path, body) {
   return response.json();
 }
 
-/**
- * PUT request to the backend API.
- */
+
 export async function apiPut(path, body) {
   const headers = {
     'Content-Type': 'application/json',
@@ -76,9 +69,7 @@ export async function apiPut(path, body) {
   return response.json();
 }
 
-/**
- * DELETE request to the backend API.
- */
+
 export async function apiDelete(path) {
   const headers = {};
   const token = getToken();
@@ -100,32 +91,22 @@ export async function apiDelete(path) {
 }
 
 
-/**
- * Get JWT token from localStorage.
- */
+
 export function getToken() {
   return localStorage.getItem('nextroute_token');
 }
 
-/**
- * Store JWT token in localStorage.
- */
+
 export function setToken(token) {
   localStorage.setItem('nextroute_token', token);
 }
 
-/**
- * Remove JWT token (logout).
- */
+
 export function removeToken() {
   localStorage.removeItem('nextroute_token');
 }
 
-/**
- * Decode the JWT payload to get user info (id, name, email, role).
- * JWT format: header.payload.signature — we decode the middle part.
- * Returns null if no token or invalid.
- */
+// Decode the JWT payload (middle segment) to extract user info
 export function getUser() {
   const token = getToken();
   if (!token) return null;
@@ -134,7 +115,7 @@ export function getUser() {
     const payload = token.split('.')[1];
     const decoded = JSON.parse(atob(payload));
 
-    // Check if token is expired
+    // Auto-logout if the token has expired
     if (decoded.exp && decoded.exp * 1000 < Date.now()) {
       removeToken();
       return null;
@@ -151,24 +132,18 @@ export function getUser() {
   }
 }
 
-/**
- * Check if user is logged in.
- */
+
 export function isLoggedIn() {
   return getUser() !== null;
 }
 
-/**
- * Check if logged-in user is admin.
- */
+
 export function isAdmin() {
   const user = getUser();
   return user && user.role === 'ADMIN';
 }
 
-/**
- * Logout — remove token.
- */
+
 export function logout() {
   removeToken();
 }

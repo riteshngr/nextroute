@@ -29,9 +29,7 @@ public class AdminController {
         this.jwtUtil = jwtUtil;
     }
 
-    /**
-     * Checks if the request has admin role. Returns null if authorized, error response otherwise.
-     */
+    // Returns null if the caller is an admin, or an error response to send back if they're not.
     private ResponseEntity<?> checkAdmin(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -44,7 +42,7 @@ public class AdminController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("error", "Admin access required"));
             }
-            return null; // authentication successful
+            return null; // authorized — caller can proceed
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Invalid token"));
@@ -60,7 +58,7 @@ public class AdminController {
         ResponseEntity<?> authError = checkAdmin(authHeader);
         if (authError != null) return authError;
 
-        destination.setId(null); // force creation of a new record
+        destination.setId(null);
         destinationRepository.save(destination);
         return ResponseEntity.status(HttpStatus.CREATED).body(destination);
     }

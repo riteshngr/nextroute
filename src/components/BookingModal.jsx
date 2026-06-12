@@ -62,7 +62,7 @@ export default function BookingModal({ offer, onClose, onSuccess }) {
           {nights > 0 && <p className="bm-nights">🌙 {nights} Nights</p>}
         </div>
 
-        {/* Price display */}
+
         <div className="bm-price-section">
           <div className="bm-price-per-person">
             {offer.oldPrice && (
@@ -101,7 +101,7 @@ export default function BookingModal({ offer, onClose, onSuccess }) {
             {errors.fromDate && <span className="bm-err">{errors.fromDate}</span>}
           </div>
 
-          {/* Show auto-calculated checkout date for offers with nights */}
+
           {nights > 0 && fromDate && (
             <div className="bm-field">
               <label>Check-out Date</label>
@@ -114,7 +114,7 @@ export default function BookingModal({ offer, onClose, onSuccess }) {
             </div>
           )}
 
-          {/* Show manual end date picker only when no nights info */}
+
           {!isSpecialOffer && !nights && (
             <div className="bm-field">
               <label>To Date</label>

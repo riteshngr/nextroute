@@ -36,7 +36,6 @@
   display: none;
 }
 
-/* Hover expansion */
 .offer-card.active {
   width: 58%;
   z-index: 10;
@@ -44,7 +43,6 @@
   transform: scale(1.03);
 }
 
-/* Image Box */
 .img-box {
   width: 100%;
   transition: transform 1.35s ease, width 0.35s ease;

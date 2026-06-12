@@ -4,11 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Booking entity — stores user trip bookings.
- * Each booking belongs to a user (FK).
- * Status can be CONFIRMED or CANCELLED.
- */
 @Entity
 @Table(name = "bookings")
 public class Booking {

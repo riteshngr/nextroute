@@ -1,11 +1,7 @@
 package com.nextroute.dto;
 
-/**
- * DTO for chat messages sent via WebSocket.
- */
 public class ChatDTO {
 
-    /** Message sent from client to server */
     public static class ChatRequest {
         private String message;
         private String token;
@@ -19,7 +15,6 @@ public class ChatDTO {
         public void setRoomId(String roomId) { this.roomId = roomId; }
     }
 
-    /** Message broadcast from server to clients */
     public static class ChatResponse {
         private Long id;
         private Long senderId;

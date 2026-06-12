@@ -1,11 +1,7 @@
 package com.nextroute.dto;
 
-/**
- * DTOs for booking operations.
- */
 public class BookingDTO {
 
-    /** Request body for creating a booking */
     public static class BookingRequest {
         private String destination;
         private String fromDate;
@@ -28,7 +24,6 @@ public class BookingDTO {
         public void setTotalPrice(Integer totalPrice) { this.totalPrice = totalPrice; }
     }
 
-    /** Response body for a booking */
     public static class BookingResponse {
         private Long id;
         private String destination;
